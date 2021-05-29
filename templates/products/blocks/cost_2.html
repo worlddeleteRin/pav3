@@ -1,0 +1,17 @@
+{% load i18n %}
+<div class="cost2__container">
+    <div class="cost2__container__button">
+        <div class="cost2__container__button__title">
+            {% blocktrans %}Сделай заказ прямо сейчас!{% endblocktrans %}
+        </div>
+        <span id="cost__count__link2">
+            {% blocktrans %}Сделать заказ{% endblocktrans %}
+        </span>
+    </div>
+</div>
+
+<script>
+    $("#cost__count__link2").click(function() {
+        showModal();
+    })
+</script>

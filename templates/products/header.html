@@ -1,0 +1,117 @@
+{% load static %}
+{% load i18n %}
+<div class="header__main__wrapper">
+    <div class="language_container">
+        <span class="language_item pointer" value="en">
+            <img src="{% static 'images/en.svg' %}" alt="">
+        </span>
+        <span class="language_item pointer" value="ru">
+            <img src="{% static 'images/ru.svg' %}" alt="">
+        </span>
+        <span class="language_item pointer" value="uk">
+            <img src="{% static 'images/ua.svg' %}" alt="">
+        </span>
+        <span class="language_item pointer" value="ge">
+            <img src="{% static 'images/ge.png' %}" alt="">
+        </span>
+        <span class="language_item pointer" value="tr">
+            <img src="{% static 'images/tr.png' %}" alt="">
+        </span>
+    </div>
+    <div class="header__main__container">
+        <div class="header__main__container__logo">
+            <!-- <img src="https://placehold.it/400x400" alt=""> -->
+            <a href="{% url 'products:index' %}">
+                <img src="{% static 'images/logo1.png' %}" alt="">
+            </a>
+        </div>
+
+        <div class="mobile__menu__button">
+            <i class="gg-close mobile__close__icon__2"></i>
+            <i class="gg-menu-boxed mobile__close__icon__1"></i>
+            
+        </div>
+        <div class="header__main__container__items">
+            <div class="header__main__container__item">
+                <a href="{% url 'products:index' %}">
+                    {% blocktrans %}Главная{% endblocktrans %}
+                </a>
+            </div>
+            <div class="header__main__container__item">
+                <a href="{% url 'products:index' %}#catalog">
+                   {% blocktrans %}Каталог{% endblocktrans %}
+                </a>
+            </div>
+            <div class="header__main__container__item">
+                <a href="{% url 'products:index' %}#aboutus"> 
+                    {% blocktrans %}Про Нас{% endblocktrans %}
+                </a>
+            </div>
+            <div class="header__main__container__item">
+                <a href="{% url 'products:index' %}#ourcontacts">
+                   {% blocktrans %}Контакты{% endblocktrans %}
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="mobile__menu__main">
+    <div class="mobile__menu__main__container">
+        <div class="mobile__menu__main__container__menu">
+            <div class="mobile__menu__main__container__menu__item">
+                <a
+                href="{% url 'products:index' %}">
+                    {% blocktrans %}Главная{% endblocktrans %}
+                </a>
+            </div>
+            <div class="mobile__menu__main__container__menu__item">
+                <a
+                href="{% url 'products:index' %}#catalog">
+                    {% blocktrans %}Каталог{% endblocktrans %}
+                </a>
+            </div>
+            <div class="mobile__menu__main__container__menu__item">
+                <a
+                href="{% url 'products:index' %}#aboutus">
+                    {% blocktrans %}О Нас{% endblocktrans %}
+                </a>
+            </div>
+            <div class="mobile__menu__main__container__menu__item">
+                <a
+                href="{% url 'products:index' %}#ourcontacts">
+                    {% blocktrans %}Контакты{% endblocktrans %}
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- <i class="gg-close mobile__menu__main__close"></i> -->
+</div>
+
+<div class="mobile__menu__main__wrapper">
+
+</div>
+
+
+<script>
+    $('.mobile__menu__main__container__menu__item a').click(function() {
+        $(".mobile__menu__main").removeClass("show")
+        $(".mobile__close__icon__1").removeClass("show")
+        $(".mobile__close__icon__2").removeClass("show")
+        $(".mobile__menu__main__wrapper").removeClass("show")
+    })
+    $(".mobile__menu__button").click(function() {
+        $(".mobile__menu__main").toggleClass("show")
+        $(".mobile__close__icon__1").toggleClass("show")
+        $(".mobile__close__icon__2").toggleClass("show")
+        $(".mobile__menu__main__wrapper").toggleClass("show")
+    })
+    $(".mobile__menu__main__wrapper").click(function() {
+        $(".mobile__menu__main").removeClass("show")
+        $(".mobile__close__icon__1").removeClass("show")
+        $(".mobile__close__icon__2").removeClass("show")
+        $(".mobile__menu__main__wrapper").removeClass("show")
+    })
+</script>

@@ -1,0 +1,193 @@
+{% load static %}
+{% load i18n %}
+<html lang="en">
+<head>
+    <link rel="maf stroy icon" href="{% static 'images/logo1.png' %}" type="image/x-icon" /> 
+    <link rel="shortcut icon" href="{% static 'images/logo1.png' %}" type="image/x-icon" /> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>МАФ</title>
+
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link href='https://css.gg/css' rel='stylesheet'>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
+    <link rel="stylesheet" href="{% static 'js/owlcarousel/owl.carousel.css'%}">
+    <link rel="stylesheet" href="{% static 'js/owlcarousel/owl.theme.default.css'%}">
+
+
+    <link rel="stylesheet" href="{% static 'slick/slick.css'%}">
+    <link rel="stylesheet" href="{% static 'slick/slick-theme.css'%}">
+
+    <script src="https://kit.fontawesome.com/bca16a3855.js" crossorigin="anonymous"></script>
+    
+
+
+
+    
+    <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+    m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+    (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+ 
+    ym(71679652, "init", {
+         clickmap:true,
+         trackLinks:true,
+         accurateTrackBounce:true,
+         webvisor:true
+    });
+ </script>
+ <noscript><div><img src="https://mc.yandex.ru/watch/71679652" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+ <!-- /Yandex.Metrika counter -->
+
+</head>
+<body>
+
+    {% block main_header %}
+    <div class="main__header__block">
+        {% include './header.html' %}
+    </div>
+    {% endblock main_header %}
+
+    <div class="main__site__wrapper">
+        {% block content %}
+
+        {% endblock content %}
+    </div>
+
+
+    {% block main_footer %}
+        {% include './footer.html' %}
+    {% endblock main_footer %}
+
+    {% include './blocks/popup_form.html' %}
+
+    {% include './blocks/popup_complete.html' %}
+
+    <div id="google_translate_element"></div>
+
+
+
+     <script src="{% static 'js/owlcarousel/owl.carousel.js' %}"></script>
+
+
+    <script src="{% static 'slick/slick.js' %}"></script>
+
+    <script>
+        $("body").on('click', '.pform__button', function() {
+        $(".form__error__name").removeClass("show")
+        $(".form__error__phone").removeClass("show")
+        var name = $('input[name=name]').val()
+        var phone = $('input[name=phone]').val()
+        if (name.length < 1) {
+            $(".form__error__name").addClass("show")
+        }
+        else if (phone.length < 1) {
+            $(".form__error__phone").addClass("show")
+        }
+        else {
+            $(".form__error__name").removeClass("show")
+            $(".form__error__phone").removeClass("show")
+            $.ajax({
+                url: "{% url 'products:contact_form_send' %}",
+                data: {
+                    'name': name,
+                    'phone': phone,
+                }, success: function(data) {
+                    $(".pform__wrap").removeClass("show")
+                    $(".pform__wrap__wrapper").removeClass("show")
+                    openThankPopup()
+                    // $(".pform__container").html("<div class='form_response_msg'><div><i class='fa fa-check-circle form_fa_complete'></div></i><div class='form_resp_text'>Спасибо за заявку, наш менеджер свяжется с вами!</div></div>")
+                    // setTimeout(function() {
+                    //     $(".pform__wrap").removeClass("show")
+                    //     $(".pform__wrap__wrapper").removeClass("show")
+                    // }, 2000)
+                }
+            })
+        }
+    })
+
+
+
+
+
+
+function sendCall(call_type) {
+    console.log(call_type)
+    if (call_type == 'phone_only') {
+        var call_phone = $("input[name='call_phone2']").val()
+        $.ajax({
+            url: "{% url 'products:contact_form_send' %}",
+            data: {
+                'name': 'Имя не указано',
+                'phone': call_phone,
+            }, success: function(data) {
+                openThankPopup()
+            }
+        });
+    }
+}
+
+function checkForm(call_type) {
+    var passed = true
+    if (call_type == 'phone_only') {
+        var call_phone = $("input[name = 'call_phone2']")
+        if ($(call_phone).val().length < 1) {
+            $(call_phone).addClass('alert')
+            passed = false
+        } else {
+            $(call_phone).removeClass('alert')
+        }
+        return passed
+    }
+}
+function openThankPopup() { 
+    $("#thank_popup").addClass("show")
+    $(".contacts_popup_bg").addClass("show")
+}
+function closeThankPopup() { 
+    $("#thank_popup").removeClass("show")
+    $(".contacts_popup_bg").removeClass("show")
+}
+
+$('#send_call_phone2').click(function() {
+    var call_type = 'phone_only'
+    var passed = checkForm(call_type)
+    if (passed == true) {
+        sendCall(call_type)
+    }
+})
+
+$('#thank_popup_close').click(function() {
+    closeThankPopup()
+})
+
+
+$('.language_item').click(function() {
+    lang_pass = ['en', 'ru', 'uk', 'ge', 'tr']
+    var lang_code = $(this).attr("value")
+    var include = lang_pass.includes(lang_code) 
+    if (include) {
+        setLanguage(lang_code)
+    }
+})
+function setLanguage(lang_code) {
+    $.ajax({
+        url: "{% url 'products:set_language_ajax' %}",
+        data: {
+            'lang_code': lang_code,
+        }, success: function(data) {
+            location.reload()
+        }
+    })
+}
+    </script>
+
+
+</body>
+</html>

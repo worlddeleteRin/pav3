@@ -1,0 +1,23 @@
+{% load i18n %}
+<div class="contacts_popup"
+    id="thank_popup">
+    <div class="contacts_popup_content">
+        <div class="nice_title2 center light">
+            <span>
+                {% blocktrans %}Ваша заявка принята{% endblocktrans %}
+            </span>
+        </div>
+        <div class="contacts_popup_subtitle">
+            <span>
+                {% blocktrans %}Наш менеджер скоро свяжется с Вами.{% endblocktrans %}
+            </span>
+        </div>
+        <div class="nice_button red wide contacts_popup_button">
+            <span id="thank_popup_close">
+                {% blocktrans %}Закрыть{% endblocktrans %}
+            </span>
+        </div>
+    </div>
+</div>
+<!-- bg for contacts popup -->
+<div class="contacts_popup_bg"></div>
