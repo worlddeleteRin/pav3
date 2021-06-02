@@ -175,3 +175,20 @@ STATIC_ROOT = os.path.join(VENV_PATH, 'static_root')
 # SECURE_HSTS_PRELOAD = True
 # SECURE_HSTS_SECONDS = 31536000
 
+#LOGGING = {
+#	'version': 1,
+#	'handlers': {
+#		'console': {
+#			'class': 'logging.StreamHandler',
+#		}
+#	},
+#	'loggers': {
+#		'django.db.backends': {
+#			'level': 'DEBUG',
+#		},
+#	},
+#	'root': {
+#		'handlers': ['console'],
+#	},
+#}
+#

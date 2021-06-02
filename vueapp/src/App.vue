@@ -29,7 +29,7 @@ export default {
 	 },
 	async beforeMount () {
 		this.$store.commit('setGlobalDataLoaded', false);
-		await this.apiGetProducts();	
+//		await this.apiGetProducts();	
 		await this.apiGetCategories();
 		this.$store.commit('setGlobalDataLoaded', true);
 	},

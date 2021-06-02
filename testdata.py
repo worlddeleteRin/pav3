@@ -6,6 +6,7 @@ import os
 import requests
 import base64
 import random
+from timeit import default_timer as timer
 
 import django
 from django.conf import settings
@@ -61,8 +62,12 @@ def create_product_attribute_value(attr_value):
 	return new_attr
 
 if __name__ == '__main__':
+#	set start timer
+	start = timer()
 #	delete all products first
 	deleteall()
+	print('all is deleted')
+	print('start creating')
 #	create categories 	
 	for i in range(7):
 		current_category = {
@@ -80,7 +85,8 @@ if __name__ == '__main__':
 		}
 		create_attributes(current_attribute)
 #	create products
-	for i in range(100):
+	products_to_create = []
+	for i in range(10000):
 		cat_count =  Category.objects.all().count()
 		cat_number = random.randint(0, cat_count-1)
 		current_category = Category.objects.all()[cat_number] 
@@ -91,5 +97,9 @@ if __name__ == '__main__':
 			'price': random.randint(100, 10000),
 		}
 		create_product(current_product)
-		print('creaeted', i, 'products')
-	print('script is running')
+#		print('creaeted', i, 'products')
+
+#	track end of timer
+	print('everything is created!')
+	end = timer()
+	print('took time (seconds): ', end - start)

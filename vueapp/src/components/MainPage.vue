@@ -1,4 +1,7 @@
 <template>
+	<div>
+		{{ this.categories }}
+	</div>
 	<div class="relative">
 		dialog is: {{ this.dialog }}
 		products are {{ this.products }}

@@ -22,4 +22,6 @@ app_name = 'api'
 urlpatterns = [
     path('get_products/', views.get_products, name='get_products'),
 	path('get_categories/', views.get_categories, name='get_categories'),
+	path('get_category_products/', views.get_category_products, name = 'get_category_products'),
+	path('product/<int:product_id>', views.product, name = 'product'),
 ]

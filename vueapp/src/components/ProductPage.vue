@@ -23,6 +23,7 @@
 <script>
 
 import ProductPageImageContainer from '../components/ProductPageImageContainer.vue';
+import { apiGetProductById } from '../api.js';
 
 export default {
 	name: 'ProductPage',
@@ -31,7 +32,8 @@ export default {
 		ProductPageImageContainer,
 	},
 	async beforeMount () {
-		this.current_product = await this.$store.getters.getProductById(this.product_id);
+		var product_data = await this.apiGetProductById(this.product_id);
+		this.current_product = product_data.product;
 		console.log('product is:', this.current_product);
 		this.product_loaded = true;
 	},
@@ -45,6 +47,9 @@ export default {
 		api_url () {
 			return this.$store.state.common.api_url;
 		},
+	},
+	methods: {
+		apiGetProductById,
 	},
 }
 
