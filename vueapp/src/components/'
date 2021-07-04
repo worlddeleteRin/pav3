@@ -1,0 +1,29 @@
+<template>
+	<span 
+	class="flex items-center w-9/12 py-1 pl-2 rounded-lg hover:bg-gray-50" 
+	v-for="filter_value in this.$parent.all_filters[this.filter_key].values"
+	:key="filter_value"
+	>
+	  <input 
+	  class="border-2 rounded border-grey-50"
+	  :id="'filter_attr_' + filter_value.code"
+	  type="checkbox"
+	  :checked="isFilterValueChecked(filter_key, filter_value.code)"
+	  @input="this.setFilterActive(filter_key, filter_value)"
+	  />
+	  <label
+	  class="pl-2 font-normal cursor-pointer"	
+	  :for="'filter_attr_' + filter_value.code"
+	  >
+	  {{ filter_value.display_value }}
+	  </label>
+	</span>
+</template>
+
+<script>
+export default {
+	props: ["filter_key"],
+	name: 'MainFilterMultiple',
+
+}
+</script>

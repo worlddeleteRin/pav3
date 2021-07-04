@@ -1,14 +1,41 @@
 from django.db import models
+from mptt.models import MPTTModel, TreeForeignKey
+from mptt.managers import TreeManager
+from versatileimagefield.fields import PPOIField, VersatileImageField
+
+from django.db.models import JSONField
 
 # Create your models here.
 
+class ProductMediaTypes:
+	IMAGE = "IMAGE"
+	VIDEO = "VIDEO"
 
-class Category(models.Model):
-    name = models.CharField(default='', max_length = 200)
-    imgurl = models.ImageField(upload_to='static/images', blank = True, null = True)
+	CHOICES = [
+		(IMAGE, "Uploaded image or url to an image"),
+		(VIDEO, "A Url to external video"),
+	]
 
-    def __str__(self):
-        return self.name
+
+class Category(MPTTModel):
+	name = models.CharField(max_length = 250, default = None)
+	slug = models.SlugField(max_length = 255, unique = True, allow_unicode = True, default = None)
+	description = models.TextField(default = None)
+	parent = TreeForeignKey(
+		"self", null=True,blank=True,related_name="children",on_delete=models.CASCADE
+	)
+	image = VersatileImageField(
+		'Image',
+		upload_to="static/images/category_images",
+		blank = True, null = True,
+		ppoi_field='ppoi'
+	)
+	ppoi = PPOIField()
+
+	objects = models.Manager()
+
+	def __str__(self) -> str:
+		return self.name or 'no name specified'
 
 class Product(models.Model):
 	product_types = (
@@ -17,67 +44,68 @@ class Product(models.Model):
 		('child', 'child')
 	)
 	type = models.CharField(default = 'stand_alone', choices = product_types, max_length = 50)
-	category = models.ManyToManyField(Category,)
+
+	category = models.ForeignKey(
+		Category,
+		related_name="products",
+		on_delete = models.SET_NULL,
+		null=True,
+		blank=True,
+	)
+
 	name = models.CharField(default='', max_length = 300)
-	price = models.IntegerField(default=0,)
-	sale_price = models.IntegerField(default = None, null = True, blank = True)
+	slug = models.SlugField(default = None, max_length = 300, unique=True, allow_unicode=True)
+	description = models.TextField(default = None)
 
-	def __str__(self):
-		return self.name + ' ' + str(self.price)
+# 	price = models.IntegerField(default=0,)
+#	sale_price = models.IntegerField(default = None, null = True, blank = True)
 
+	updated_at = models.DateTimeField(auto_now=True, null=True)
 
-class ProductImage(models.Model):
-    product = models.ForeignKey(Product, on_delete = models.CASCADE, default = None)
-    imgurl = models.ImageField(upload_to='static/images/products', blank = True, null = True)
-
-    def __str__(self):
-        return self.product.name
-    
-
-class ProductAttribute(models.Model):
-	attributes_types = (
-		('text', 'text'),
-		('integer', 'integer'),
-		('boolean', 'boolean'),
+	default_variant = models.OneToOneField(
+		"ProductVariant",
+		blank=True,
+		null=True,
+		on_delete=models.SET_NULL
 	)
-	attributes_filter_types = (
-		('multiple', 'multiple'),
-		('option', 'option'),
+	rating = models.FloatField(null=True, blank=True)
+
+	def __str__(self) -> str:
+		return self.name
+
+class ProductVariant(models.Model):
+	sku = models.CharField(max_length=255,unique=True)
+	name = models.CharField(max_length=255, blank=True)
+	parent_product = models.ForeignKey(
+		Product, related_name="variants", on_delete=models.CASCADE
 	)
-	name = models.CharField(max_length = 300, default = None)	
-	code = models.CharField(max_length = 300, default = None)	
-	type = models.CharField(default = 'text', max_length = 100, choices = attributes_types)
-	filter_type = models.CharField(default = 'multiple', max_length = 100, choices = attributes_filter_types)
-	use_filter = models.BooleanField(default = True)
-	def __str__(self):
-		return self.code  + ':' + self.name
+	media = models.ManyToManyField("ProductMedia", through = "VariantMedia")
 
-class ProductAttributeValue(models.Model):
-	boolean_choices = (
-		('true', 'Yes'),
-		('false', 'No'),
+	def __str__(self) -> str:
+		return self.name or self.sku
+
+class ProductMedia(models.Model):
+	product = models.ForeignKey(Product, related_name="media", on_delete = models.CASCADE)
+	image = VersatileImageField(
+		upload_to="static/images/products",
+		ppoi_field="ppoi", blank=True, null=True,
 	)
-	attribute = models.ForeignKey(ProductAttribute, on_delete = models.CASCADE, default  = None)
-	product = models.ForeignKey(Product, on_delete = models.CASCADE, default = None, related_name = 'attr')
-	code = models.CharField(max_length = 200, default = None)
-	text =  models.CharField(max_length = 500, default = None,
-	blank = True, null = True)
-	integer = models.IntegerField(default = None, 
-	blank = True, null = True)
-	boolean = models.CharField(default = None, max_length = 20, choices = boolean_choices,
-	blank = True, null = True) 
+	ppoi = PPOIField()
+	type = models.CharField(
+		max_length=50,
+		choices=ProductMediaTypes.CHOICES,
+		default=ProductMediaTypes.IMAGE,
+	)
+	external_url = models.CharField(max_length=300, blank=True, null=True)
+	oembed_data = JSONField(blank = True, null = True)
 
-	def __str__(self):
-		return  self.product.name + ' --- ' + str(self.get_value())
-	def get_value(self):
-		if self.attribute.type == 'text':
-			return self.text
-		if self.attribute.type == 'integer':
-			return self.integer
-		if self.attribute.type == 'boolean':
-			return self.boolean
-
-
+class VariantMedia(models.Model):
+	variant = models.ForeignKey(
+		"ProductVariant", related_name="variant_media", on_delete=models.CASCADE
+	)
+	media = models.ForeignKey(
+		ProductMedia, related_name="variant_media", on_delete=models.CASCADE
+	)
 
 
 def deleteall():

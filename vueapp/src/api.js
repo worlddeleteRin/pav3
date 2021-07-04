@@ -7,6 +7,7 @@ export async function apiGetProducts() {
 		var r_status = response.data.status
 		if (r_status == 1) {
 			this.$store.commit('setProducts', response.data.products)
+			 this.$store.commit('setAllFilters', response.data.products_filters)
 		}
     })
 }
@@ -26,8 +27,11 @@ export async function apiGetCategoryProducts(category_id, query) {
 		'category_id': category_id,
 	}
 	for (var key in query) {
-		params[key] = query[key]	
+		if (query[key]) {
+			params[key] = query[key]
+		}
 	}
+	console.log('params are', params)
 	await axios.get(
 		'/api/get_category_products/', {
 			params: params,
@@ -41,7 +45,7 @@ export async function apiGetCategoryProducts(category_id, query) {
 
 export async function apiGetCategories () {
     await axios.get(
-        '/api/get_categories',
+        '/api/get_categories/',
     ).then((response) => {
 		var r_status = response.data.status
 		if (r_status == 1) {

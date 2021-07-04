@@ -4,14 +4,14 @@ from products.models import *
 # Register your models here.
 
 
-class ProductimagesInline(admin.TabularInline):
-    model = ProductImage 
+class ProductmediaInline(admin.TabularInline):
+    model = ProductMedia 
 
 class ProductAdmin(admin.ModelAdmin):
-    inlines = [ProductimagesInline]
+    inlines = [ProductmediaInline]
 
 admin.site.register(Category)
 admin.site.register(Product, ProductAdmin)
-admin.site.register(ProductImage)
-admin.site.register(ProductAttribute)
-admin.site.register(ProductAttributeValue)
+admin.site.register(ProductVariant)
+admin.site.register(VariantMedia)
+admin.site.register(ProductMedia)

@@ -16,6 +16,17 @@ django.setup()
 
 from products.models import *
 
+test_attributes = {
+	"color": [
+		"red", "green", "blue", "white"
+	],
+	"size": [
+		"small", "medium", "big"
+	],
+	"delivery_frequency": [
+		"1d", "2d", "3d", "4d"
+	]
+}
 
 
 def create_product(product):
@@ -33,6 +44,22 @@ def create_product(product):
 			imgurl = 'https://placehold.it/1000x1000',
 		)
 		img.save()
+	# add attribute value to created product
+	atr_list = list(test_attributes.keys())
+	atr_list_len = atr_list.__len__()
+	rnd_int = random.randint(0, atr_list_len - 1)
+	rnd_atr_str = atr_list[rnd_int]
+	current_attr = ProductAttribute.objects.get(code = rnd_atr_str)
+	atr_values = test_attributes[rnd_atr_str]
+	rnd_int = random.randint(0, len(atr_values) - 1)
+	current_atr_value = atr_values[rnd_int]
+	new_product_value = ProductAttributeValue(
+		attribute = current_attr,
+		product = new_p,
+		code = current_atr_value,
+		text = current_atr_value
+	)
+	new_product_value.save()
 	return new_p
 def create_category(category): 
 	new_c = Category(
@@ -69,17 +96,17 @@ if __name__ == '__main__':
 	print('all is deleted')
 	print('start creating')
 #	create categories 	
-	for i in range(7):
+	for i in range(2):
 		current_category = {
 			'name': 'some category' + str(i),
 			'imgurl': 'http://placehold.it/100x100',
 		}
 		create_category(current_category)
 #	create attributes 
-	for i in range(200):
+	for attr in list(test_attributes.keys()):
 		current_attribute = {
-			'name': 'Какое-то название атрибута' + str(i),
-			'code': 'some_attr_name' + str(i),
+			'name': attr,
+			'code': attr,
 			'type': 'text',
 			'filter_type': 'multiple',
 		}
@@ -97,6 +124,7 @@ if __name__ == '__main__':
 			'price': random.randint(100, 10000),
 		}
 		create_product(current_product)
+
 #		print('creaeted', i, 'products')
 
 #	track end of timer

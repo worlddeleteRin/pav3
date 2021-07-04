@@ -1,7 +1,18 @@
 <template>
 	<div>
+		categories are:		
+	</div>
+	<div>
 		{{ this.categories }}
 	</div>
+
+	<el-tree
+	:data="this.categories"
+	:label="name"
+	:props="{ label: 'name', children: 'children' }"
+	> 
+	</el-tree>
+
 	<div class="relative">
 		dialog is: {{ this.dialog }}
 		products are {{ this.products }}

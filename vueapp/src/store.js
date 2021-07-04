@@ -13,8 +13,14 @@ const storeDialogs = {
 	call_phone_dialog: {
 		show: false,
 	},
+	mobile_filter_popup: {
+		show: false,
+	},
   }),
   mutations: {
+	  set_mobile_filter_popup(state, is_show) {
+		state.mobile_filter_popup.show = is_show;
+	  },
       openSimpleDialog(state, { 
 		button_text, heading, description 
 		}) {
@@ -40,11 +46,24 @@ const storeDialogs = {
 const storeEcommerce = {
   state: () => ({
 	products: {},
+	current_category_id: null,
 	categories: {},
 	active_filters: {},
 	all_filters: {},
+	api_products_loaded: false,
+	products_pages: {},
   }),
   mutations: {
+	setCurrentCategoryId(state, val) {
+		state.current_category_id = val
+	},
+	setProductsPages(state, info) {
+		state.products_pages = info	
+		console.log("products pages are", state.products_pages)
+	},
+	setApiProductsLoaded(state, val) {
+		state.api_products_loaded = val;
+	},
 	setProducts(state, products) {
 		state.products = products;
 	},
@@ -69,34 +88,63 @@ const storeEcommerce = {
 				state.active_filters[filter_key].splice(indx, 1)	
 			}
 		}
+//		if (state.active_filters[filter_key].length == 0) {
+//			delete state.active_filters[filter_key]
+//		}
+	},
+	deleteRangeFilter(state, params) {
+		var filter_key = params.f_key
+		state.active_filters[filter_key] = []
 	},
 	addOptionFilter(state, filter_params) {
 		var filter_key = filter_params.f_key
 		var filter_item = filter_params.filter_value
-		// code to add option filter	
-		if (filter_key in state.active_filters) {
-			delete state.active_filters[filter_key]
+		console.log('from filter', state, filter_key, filter_item)
+		if (filter_item.length > 0) {
+			state.active_filters[filter_key] = [filter_item]
+		} else {
+			state.active_filters[filter_key] = []
 		}
-		state.active_filters[filter_key] = []
-		state.active_filters[filter_key].push(filter_item.code)
+	},
+	addRangeFilter(state, filter_params) {
+		var filter_key = filter_params.f_key
+		var filter_items = filter_params.filter_value
+		state.active_filters[filter_key] = filter_items
+		console.log('filter key value is', state.active_filters[filter_key])
 	},
 	addCheckboxFilter(state, filter_params) {
 		var filter_key = filter_params.f_key 
-		var filter_item = filter_params.filter_value
+		var filter_items = filter_params.filter_value
+		console.log('filter items are', filter_items)
+		state.active_filters[filter_key] = filter_items
 		// code to add checkbox filter
-		if(filter_key in state.active_filters) {
-			state.active_filters[filter_key].push(filter_item.code)
-		} else {
-			state.active_filters[filter_key] = []
-			state.active_filters[filter_key].push(filter_item.code)
-		}
+//		for (var i in filter_items) {
+//			var filter_item = filter_items[i];
+//			if(filter_key in state.active_filters) {
+//				if (state.active_filters[filter_key].some(item => item == filter_item)) {
+//					continue;
+////					var indx = state.active_filters[filter_key].indexOf(filter_item)
+////					delete state.active_filters[filter_key][indx]
+//				} else {
+//					state.active_filters[filter_key].push(filter_item)
+//				}
+//			} else {
+//				state.active_filters[filter_key] = []
+//				state.active_filters[filter_key].push(filter_item)
+//			}
+//			console.log('min state filters are', state.active_filters)
+//		}
+		console.log('state filters are', state.active_filters)
 	},
 	removeCheckboxFilter(state, filter_params) {
 		var filter_key = filter_params.f_key
 		var filter_item = filter_params.filter_value
+		if (!(filter_key in state.active_filters)) {
+			return false
+		}
 		for (var indx in state.active_filters[filter_key]) {
 			var current_item = state.active_filters[filter_key][indx]	
-			if(current_item == filter_item.code) {
+			if(current_item == filter_item) {
 				state.active_filters[filter_key].splice(indx, 1)
 			}
 		}
@@ -105,6 +153,7 @@ const storeEcommerce = {
 		}
 	},
   },
+
   actions: {},
   getters: {
 	getCategoryById: (state) => (id) => {
@@ -137,8 +186,11 @@ const storeEcommerce = {
 	getFilterQuery: (state) => {
 		var query = ""
 		for (var filter_key in state.active_filters) {
-			query += filter_key + '='	
 			var filter_values = state.active_filters[filter_key]
+			if (filter_values.length < 0) {
+				continue;
+			}
+			query += filter_key + '='	
 			for (var filter_value in filter_values) {
 				query += filter_values[filter_value] + ','
 			}
